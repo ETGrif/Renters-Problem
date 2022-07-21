@@ -1,4 +1,6 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public class SimplexTest {
         // get possible vertices
         Simplex simplex = new Simplex(8);
         List<Vertex> verts = simplex.getAllVerts();
+        assertEquals(36, verts.size());
 
         // check for existing verticies
         Vertex existing1 = new Vertex(0, 0); // origin
@@ -39,14 +42,20 @@ public class SimplexTest {
         assertFalse(verts.contains(nonexisting2));
         assertFalse(verts.contains(nonexisting3));
 
+        //test getVertex
+        existing1 = simplex.getVert(1,1);
+        nonexisting1 = simplex.getVert(8,8);
+        assertEquals(new Vertex(1,1), simplex.getVert(1,1));
+        assertNull(simplex.getVert(8,8));
+
         //
         // again for a different size
         //
 
         simplex = new Simplex(3);
-
-        // get possible vertices
         verts = simplex.getAllVerts();
+        assertEquals(6, verts.size());
+
 
         // check for existing verticies
         existing1 = new Vertex(0, 0); // origin
@@ -56,7 +65,6 @@ public class SimplexTest {
         assertTrue(verts.contains(existing1));
         assertTrue(verts.contains(existing2));
         assertTrue(verts.contains(existing3));
-        assertTrue(verts.contains(existing4));
 
         // check for non existing verticies
 
