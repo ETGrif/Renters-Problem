@@ -1,5 +1,6 @@
 package renters.problem.simplex;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,6 +53,14 @@ public class Simplex {
             return -1;
         }
         return ind;
+    }
+
+    public List<Subsimplex> getAllSubsimplexes() {
+        return new ArrayList<Subsimplex>();
+    }
+
+    public Subsimplex getSubsimplex(int i, int j) {
+        return new Subsimplex();
     }
     
 }

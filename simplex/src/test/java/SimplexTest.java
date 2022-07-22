@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import renters.problem.simplex.Simplex;
+import renters.problem.simplex.Subsimplex;
 import renters.problem.simplex.Vertex;
 
 public class SimplexTest {
@@ -42,11 +43,11 @@ public class SimplexTest {
         assertFalse(verts.contains(nonexisting2));
         assertFalse(verts.contains(nonexisting3));
 
-        //test getVertex
-        existing1 = simplex.getVert(1,1);
-        nonexisting1 = simplex.getVert(8,8);
-        assertEquals(new Vertex(1,1), simplex.getVert(1,1));
-        assertNull(simplex.getVert(8,8));
+        // test getVertex
+        existing1 = simplex.getVert(1, 1);
+        nonexisting1 = simplex.getVert(8, 8);
+        assertEquals(new Vertex(1, 1), simplex.getVert(1, 1));
+        assertNull(simplex.getVert(8, 8));
 
         //
         // again for a different size
@@ -55,7 +56,6 @@ public class SimplexTest {
         simplex = new Simplex(3);
         verts = simplex.getAllVerts();
         assertEquals(6, verts.size());
-
 
         // check for existing verticies
         existing1 = new Vertex(0, 0); // origin
@@ -75,6 +75,29 @@ public class SimplexTest {
         assertFalse(verts.contains(nonexisting1));
         assertFalse(verts.contains(nonexisting2));
         assertFalse(verts.contains(nonexisting3));
+    }
+
+    @Test
+    public void simplexSubsimplexCreationTest() {
+        Simplex simplex = new Simplex(8);
+        List<Subsimplex> subsimplexes = simplex.getAllSubsimplexes();
+
+        assertEquals(49, subsimplexes.size());
+
+        // test subsimplexes
+        Subsimplex existing1 = new Subsimplex(new Vertex(0, 0), new Vertex(0, 1), new Vertex(1, 0));
+        Subsimplex existing2 = new Subsimplex(new Vertex(3, 3), new Vertex(4, 3), new Vertex(4, 2));
+        Subsimplex nonexisting1 = new Subsimplex(new Vertex(2, 6), new Vertex(3, 6), new Vertex(3, 5));
+
+        assertTrue(subsimplexes.contains(existing1));
+        assertTrue(subsimplexes.contains(existing2));
+        assertFalse(subsimplexes.contains(nonexisting1));
+
+        // test the get function
+        assertEquals(existing1, simplex.getSubsimplex(0, 0));
+        assertEquals(existing2, simplex.getSubsimplex(3, 6));
+        assertNull(simplex.getSubsimplex(0, 12));
+
     }
 
 }
