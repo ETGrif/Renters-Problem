@@ -86,6 +86,11 @@ public class Simplex {
     // indexes from bootom to top, then left to right
     // returns -1 if out of bounds
     private int getVertIndFromCoords2D(int x, int y) {
+        if (x < 0 || x > size)
+            return -1;
+        if (y < 0 || y > size - x -1)
+            return -1;
+
         int ind = (int) (x * (size + .5) - (.5 * x * x) + y);
         if (ind < 0 || ind >= verts.length) {
             return -1;
@@ -94,11 +99,13 @@ public class Simplex {
     }
 
     private int getSubIndFromCoords2D(int x, int y) {
-        if(x < 0 || x > size - 2) return -1;
-        if(y < 0 || y > 2 * (size - 2 - x)) return -1;
+        if (x < 0 || x > size - 2)
+            return -1;
+        if (y < 0 || y > 2 * (size - 2 - x))
+            return -1;
 
         int ind = (int) (2 * x * (size - 1) - (x * x) + y);
-        if (ind < 0 || ind >= subsimplexes.length){
+        if (ind < 0 || ind >= subsimplexes.length) {
             return -1;
         }
         return ind;

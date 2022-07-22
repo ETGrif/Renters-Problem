@@ -48,6 +48,7 @@ public class SimplexTest {
         nonexisting1 = simplex.getVert(8, 8);
         assertEquals(new Vertex(1, 1), simplex.getVert(1, 1));
         assertNull(simplex.getVert(8, 8));
+        assertNull(simplex.getVert(1,7));
 
         //
         // again for a different size
