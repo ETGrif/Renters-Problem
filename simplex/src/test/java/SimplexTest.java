@@ -48,7 +48,7 @@ public class SimplexTest {
         nonexisting1 = simplex.getVert(8, 8);
         assertEquals(new Vertex(1, 1), simplex.getVert(1, 1));
         assertNull(simplex.getVert(8, 8));
-        assertNull(simplex.getVert(1,7));
+        assertNull(simplex.getVert(1, 7));
 
         //
         // again for a different size
@@ -86,9 +86,9 @@ public class SimplexTest {
         assertEquals(49, subsimplexes.size());
 
         // test subsimplexes
-        Subsimplex existing1 = new Subsimplex(new Vertex(0, 0), new Vertex(0, 1), new Vertex(1, 0));
-        Subsimplex existing2 = new Subsimplex(new Vertex(3, 3), new Vertex(4, 3), new Vertex(4, 2));
-        Subsimplex nonexisting1 = new Subsimplex(new Vertex(2, 6), new Vertex(3, 6), new Vertex(3, 5));
+        Subsimplex existing1 = new Subsimplex(0, 0, new Vertex(0, 0), new Vertex(0, 1), new Vertex(1, 0));
+        Subsimplex existing2 = new Subsimplex(3, 5, new Vertex(3, 3), new Vertex(4, 3), new Vertex(4, 2));
+        Subsimplex nonexisting1 = new Subsimplex(2, 9, new Vertex(2, 5), new Vertex(3, 5), new Vertex(3, 4));
 
         assertTrue(subsimplexes.contains(existing1));
         assertTrue(subsimplexes.contains(existing2));
@@ -110,9 +110,9 @@ public class SimplexTest {
         assertEquals(4, subsimplexes.size());
 
         // test subsimplexes
-        existing1 = new Subsimplex(new Vertex(0, 0), new Vertex(0, 1), new Vertex(1, 0));
-        existing2 = new Subsimplex(new Vertex(0, 1), new Vertex(0, 2), new Vertex(1, 1));
-        nonexisting1 = new Subsimplex(new Vertex(1, 1), new Vertex(2, 1), new Vertex(2, 0));
+        existing1 = new Subsimplex(0, 0, new Vertex(0, 0), new Vertex(0, 1), new Vertex(1, 0));
+        existing2 = new Subsimplex(0, 2, new Vertex(0, 1), new Vertex(0, 2), new Vertex(1, 1));
+        nonexisting1 = new Subsimplex(1, 1, new Vertex(1, 1), new Vertex(2, 1), new Vertex(2, 0));
 
         assertTrue(subsimplexes.contains(existing1));
         assertTrue(subsimplexes.contains(existing2));
@@ -124,4 +124,50 @@ public class SimplexTest {
         assertNull(simplex.getSubsimplex(1, 1));
     }
 
+    @Test
+    public void simplexAdjacencyList() {
+        Simplex simplex = new Simplex(8);
+        // inside major (1, 5) -> (1, 4) (1, 6) (2, 4)
+        Subsimplex subsimplex = simplex.getSubsimplex(1, 5);
+        List<Subsimplex> adjacent = subsimplex.getAdjacent();
+        assertEquals(3, adjacent.size());
+        assertTrue(adjacent.contains(simplex.getSubsimplex(1, 6)));
+        assertTrue(adjacent.contains(simplex.getSubsimplex(1, 4)));
+        assertTrue(adjacent.contains(simplex.getSubsimplex(2, 4)));
+
+        // inside minor (4,2) -> (3, 3) (4, 3) (4, 1)
+        subsimplex = simplex.getSubsimplex(4, 2);
+        adjacent = subsimplex.getAdjacent();
+        assertEquals(3, adjacent.size());
+        assertTrue(adjacent.contains(simplex.getSubsimplex(3, 3)));
+        assertTrue(adjacent.contains(simplex.getSubsimplex(4, 3)));
+        assertTrue(adjacent.contains(simplex.getSubsimplex(4, 1)));
+
+        // corner (6, 0) -> (5, 1)
+        subsimplex = simplex.getSubsimplex(6, 0);
+        adjacent = subsimplex.getAdjacent();
+        assertEquals(1, adjacent.size());
+        assertTrue(adjacent.contains(simplex.getSubsimplex(5, 1)));
+
+        // bottom edge (1, 0) -> (0, 1) (1, 1)
+        subsimplex = simplex.getSubsimplex(1, 0);
+        adjacent = subsimplex.getAdjacent();
+        assertEquals(2, adjacent.size());
+        assertTrue(adjacent.contains(simplex.getSubsimplex(0, 1)));
+        assertTrue(adjacent.contains(simplex.getSubsimplex(1, 1)));
+
+        // left edge (0, 2) -> (0, 3) (0, 1)
+        subsimplex = simplex.getSubsimplex(0, 2);
+        adjacent = subsimplex.getAdjacent();
+        assertEquals(2, adjacent.size());
+        assertTrue(adjacent.contains(simplex.getSubsimplex(0, 3)));
+        assertTrue(adjacent.contains(simplex.getSubsimplex(0, 1)));
+
+        // top edge (5, 2) -> (4, 3) (5, 1)
+        subsimplex = simplex.getSubsimplex(5, 2);
+        adjacent = subsimplex.getAdjacent();
+        assertEquals(2, adjacent.size());
+        assertTrue(adjacent.contains(simplex.getSubsimplex(4, 3)));
+        assertTrue(adjacent.contains(simplex.getSubsimplex(5, 1)));
+    }
 }

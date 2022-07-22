@@ -25,6 +25,7 @@ public class Simplex {
             int numOfSubsimplexes = (size - 1) * (size - 1);
             subsimplexes = new Subsimplex[numOfSubsimplexes];
             fillSubsimplexes();
+            setAdjacencies();
         }
 
     }
@@ -51,7 +52,7 @@ public class Simplex {
                     v3 = getVert(a + 1, (b - 1) / 2);
                 }
 
-                Subsimplex simplex = new Subsimplex(v1, v2, v3);
+                Subsimplex simplex = new Subsimplex(a, b, v1, v2, v3);
                 subsimplexes[i] = simplex;
                 i++;
             }
@@ -98,7 +99,7 @@ public class Simplex {
         return ind;
     }
 
-    private int getSubIndFromCoords2D(int x, int y) {
+    public int getSubIndFromCoords2D(int x, int y) {
         if (x < 0 || x > size - 2)
             return -1;
         if (y < 0 || y > 2 * (size - 2 - x))
@@ -122,4 +123,26 @@ public class Simplex {
         return subsimplexes[ind];
     }
 
+    private void setAdjacencies(){
+        for(Subsimplex s : subsimplexes){
+            //determine if major or minor (odd or even)
+            int x = s.getX();
+            int y = s.getY();
+            boolean isMajor = s.getY() % 2 == 1;
+
+            // all simplexes have the one above, and below
+            s.addAdjacent(getSubsimplex(x, y + 1));
+            s.addAdjacent(getSubsimplex(x, y - 1));
+
+            //these sides are dependant on if its major or minor
+            if (isMajor) {
+                s.addAdjacent(getSubsimplex(x + 1, y - 1));
+            } else {
+                s.addAdjacent(getSubsimplex(x - 1, y + 1));
+
+            }
+            
+
+        }
+    }
 }
