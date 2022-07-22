@@ -95,9 +95,32 @@ public class SimplexTest {
 
         // test the get function
         assertEquals(existing1, simplex.getSubsimplex(0, 0));
-        assertEquals(existing2, simplex.getSubsimplex(3, 6));
-        assertNull(simplex.getSubsimplex(0, 12));
+        assertEquals(existing2, simplex.getSubsimplex(3, 5));
+        assertNull(simplex.getSubsimplex(0, 13));
+        assertNull(simplex.getSubsimplex(3, 8));
 
+        //
+        // Check again for size 3
+        //
+
+        simplex = new Simplex(3);
+        subsimplexes = simplex.getAllSubsimplexes();
+
+        assertEquals(4, subsimplexes.size());
+
+        // test subsimplexes
+        existing1 = new Subsimplex(new Vertex(0, 0), new Vertex(0, 1), new Vertex(1, 0));
+        existing2 = new Subsimplex(new Vertex(0, 1), new Vertex(0, 2), new Vertex(1, 1));
+        nonexisting1 = new Subsimplex(new Vertex(1, 1), new Vertex(2, 1), new Vertex(2, 0));
+
+        assertTrue(subsimplexes.contains(existing1));
+        assertTrue(subsimplexes.contains(existing2));
+        assertFalse(subsimplexes.contains(nonexisting1));
+
+        // test the get function
+        assertEquals(existing1, simplex.getSubsimplex(0, 0));
+        assertEquals(existing2, simplex.getSubsimplex(0, 2));
+        assertNull(simplex.getSubsimplex(1, 1));
     }
 
 }
