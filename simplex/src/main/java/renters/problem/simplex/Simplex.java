@@ -6,34 +6,57 @@ import java.util.List;
 public class Simplex {
 
     public final int size;
-    int[] coords;
+    public final int dimention = 2;
 
     Vertex[] majorVerts;
     Vertex[] verts;
+
+    Vector2D ihat;
+    Vector2D jhat;
+    Vector2D chat;
 
     Subsimplex[] subsimplexes;
 
     public Simplex(int size) {
         this.size = size;
 
-        // create vertices
+        createDefaultUnitVectors();
         fillVerts();
-
-        // create subsimplexes
         fillSubsimplexes();
 
     }
 
-    public Simplex(int i, int[] coords) {
+    public Simplex(int i, double... args) {
         this.size = i;
-        this.coords = coords;
         this.verts = new Vertex[1];
 
-        // create vertices
+        createUnitVectors(args);
         fillVerts();
-
-        // create subsimplexes
         fillSubsimplexes();
+    }
+
+    private void createDefaultUnitVectors() {
+        this.chat = new Vector2D(0, 0);
+        this.ihat = new Vector2D(1, 0);
+        this.jhat = new Vector2D(1.0 / 2, 3 * Math.sqrt(3) / 2);
+    }
+
+    private void createUnitVectors(double... args) {
+        if (args.length != (dimention + 1) * dimention) {
+            throw new IllegalArgumentException("There should be 3 2D points (6 values)");
+        }
+
+        Vector2D p1 = new Vector2D(args[0], args[1]);
+        Vector2D p2 = new Vector2D(args[2], args[3]);
+        Vector2D p3 = new Vector2D(args[4], args[5]);
+
+        // p1 will be like the origin
+        // ihat points one unit from chat towards p2
+        // jhat points one unit from chat towards p3
+        this.chat = p1;
+        this.ihat = p2.getSubtracted(p1).getDivided(size - 1);
+        this.jhat = p3.getSubtracted(p1).getDivided(size - 1);
+
     }
 
     private void fillSubsimplexes() {
@@ -82,7 +105,9 @@ public class Simplex {
         int ind = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size - i; j++) {
-                Vertex newVert = new Vertex(i, j);
+                
+                Vector2D pos = chat.getAdded(ihat.getMultiplied(i)).getAdded(jhat.getMultiplied(j));
+                Vertex newVert = new Vertex(i, j, pos);
                 verts[ind] = newVert;
                 ind++;
             }

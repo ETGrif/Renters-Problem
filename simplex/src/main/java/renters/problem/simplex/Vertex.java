@@ -4,10 +4,19 @@ public class Vertex {
 
     int i;
     int j; 
+
+    Vector2D position;
     
     public Vertex(int i, int j) {
         this.i = i;
         this.j = j;
+        this.position = new Vector2D(0, 0);
+    }
+
+    public Vertex(int i, int j, Vector2D position){
+        this.i = i;
+        this.j = j;
+        this.position = position;
     }
 
     @Override
@@ -29,12 +38,29 @@ public class Vertex {
         return j;
     }
 
-    public Double getX() {
-        return -1.0;
+    public double getX() {
+        return position.x;
     }
 
-    public Double getY() {
-        return -1.0;
+    public double getY() {
+        return position.y;
     }
 
+    public Vector2D getPos(){
+        return position;
+    }
+
+    public void setX(double x){
+        position.set(x, position.y);
+    }
+
+    public void setY(double y){
+        position.set(position.x, y);
+    }
+
+    public void setPosition(Vector2D position){
+        this.position = position;
+    }
+    
+    
 }

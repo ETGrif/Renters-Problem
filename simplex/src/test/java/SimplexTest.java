@@ -174,7 +174,7 @@ public class SimplexTest {
 
     @Test
     public void defaultSimplexPosition() {
-        Simplex simplex = new Simplex(3);
+        Simplex simplex = new Simplex(4);
 
         // by default the simplex will have subsimplex side-length on 1. with the left
         // lower vertex is on the origin and the bottom edge is on the x axis
@@ -213,8 +213,8 @@ public class SimplexTest {
         // this simplex will be positioned with these major verticies:
         // (1,1), (3,4), (4,1)
 
-        int[] coords = { 1, 1, 3, 4, 4, 1 };
-        Simplex simplex = new Simplex(3, coords);
+        double[] coords = { 1, 1, 4, 1, 3, 4 };
+        Simplex simplex = new Simplex(4, coords);
 
         // Points I'd like to check -- these are the same as before but will be
         // stationed elsewhere
@@ -246,5 +246,44 @@ public class SimplexTest {
         assertEquals(3 * ix + cx, simplex.getVert(3, 0).getX());
         assertEquals(3 * iy + cy, simplex.getVert(3, 0).getY());
 
+    }
+
+    @Test
+    public void placedSimplexPositionNegatives() {
+        // this simplex will be positioned with these major verticies:
+        // (-2,-1), (1,-1), (1,2)
+
+        double[] coords = { -2, -1, 1, -1, 1, 2 };
+        Simplex simplex = new Simplex(4, coords);
+
+        // Points I'd like to check -- these are the same as before but will be
+        // stationed elsewhere
+        // (0, 0)
+        // (0, 3)
+        // (1, 1)
+        // (1, 0) << I changed this one (from 1,2) so that its another negative point
+        // (3, 0)
+
+        double ix = 1.0;
+        double iy = 0.0;
+        double jx = 1.0;
+        double jy = 1.0;
+        double cx = -2.0;
+        double cy = -1.0;
+
+        assertEquals(0 + cx, simplex.getVert(0, 0).getX());
+        assertEquals(0 + cy, simplex.getVert(0, 0).getY());
+
+        assertEquals(3 * jx + cx, simplex.getVert(0, 3).getX());
+        assertEquals(3 * jy + cy, simplex.getVert(0, 3).getY());
+
+        assertEquals(ix + jx + cx, simplex.getVert(1, 1).getX());
+        assertEquals(iy + jy + cy, simplex.getVert(1, 1).getY());
+
+        assertEquals(ix + cx, simplex.getVert(1, 0).getX());
+        assertEquals(iy + cy, simplex.getVert(1, 0).getY());
+
+        assertEquals(3 * ix + cx, simplex.getVert(3, 0).getX());
+        assertEquals(3 * iy + cy, simplex.getVert(3, 0).getY());
     }
 }
