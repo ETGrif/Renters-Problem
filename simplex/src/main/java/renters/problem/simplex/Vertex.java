@@ -2,12 +2,12 @@ package renters.problem.simplex;
 
 public class Vertex {
 
-    int x;
-    int y; 
+    int i;
+    int j; 
     
-    public Vertex(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Vertex(int i, int j) {
+        this.i = i;
+        this.j = j;
     }
 
     @Override
@@ -18,15 +18,23 @@ public class Vertex {
         }
 
         Vertex other = (Vertex) o;
-        return ( this.x == other.getX() && this.y == other.getY());
+        return ( this.i == other.getI() && this.j == other.getJ());
     }
 
-    public int getX(){
-        return x;
+    public int getI(){
+        return i;
     }
 
-    public int getY(){
-        return y;
+    public int getJ(){
+        return j;
+    }
+
+    public Double getX() {
+        return -1.0;
+    }
+
+    public Double getY() {
+        return -1.0;
     }
 
 }

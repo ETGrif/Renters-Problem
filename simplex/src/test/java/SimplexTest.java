@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import renters.problem.simplex.Simplex;
 import renters.problem.simplex.Subsimplex;
+import renters.problem.simplex.Vector2D;
 import renters.problem.simplex.Vertex;
 
 public class SimplexTest {
@@ -169,5 +170,81 @@ public class SimplexTest {
         assertEquals(2, adjacent.size());
         assertTrue(adjacent.contains(simplex.getSubsimplex(4, 3)));
         assertTrue(adjacent.contains(simplex.getSubsimplex(5, 1)));
+    }
+
+    @Test
+    public void defaultSimplexPosition() {
+        Simplex simplex = new Simplex(3);
+
+        // by default the simplex will have subsimplex side-length on 1. with the left
+        // lower vertex is on the origin and the bottom edge is on the x axis
+
+        // Points I'd like to check
+        // (0, 0) -> (0, 0)
+        // (0, 3) -> (3/2, 3sqrt(3)/2)
+        // (1, 1) -> (3/2, sqrt(3)/2)
+        // (1, 2) -> (2, sqrt(3))
+        // (3, 0) -> (3, 0)
+
+        double ix = 1.0;
+        double iy = 0.0;
+        double jx = 1.0 / 2;
+        double jy = 3 * Math.sqrt(3) / 2;
+
+        assertEquals(0, simplex.getVert(0, 0).getX());
+        assertEquals(0, simplex.getVert(0, 0).getY());
+
+        assertEquals(3 * jx, simplex.getVert(0, 3).getX());
+        assertEquals(3 * jy, simplex.getVert(0, 3).getY());
+
+        assertEquals(ix + jx, simplex.getVert(1, 1).getX());
+        assertEquals(iy + jy, simplex.getVert(1, 1).getY());
+
+        assertEquals(ix + 2 * jx, simplex.getVert(1, 2).getX());
+        assertEquals(iy + 2 * jy, simplex.getVert(1, 2).getY());
+
+        assertEquals(3 * ix, simplex.getVert(3, 0).getX());
+        assertEquals(3 * iy, simplex.getVert(3, 0).getY());
+
+    }
+
+    @Test
+    public void placedSimplexPosition() {
+        // this simplex will be positioned with these major verticies:
+        // (1,1), (3,4), (4,1)
+
+        int[] coords = { 1, 1, 3, 4, 4, 1 };
+        Simplex simplex = new Simplex(3, coords);
+
+        // Points I'd like to check -- these are the same as before but will be
+        // stationed elsewhere
+        // (0, 0)
+        // (0, 3)
+        // (1, 1)
+        // (1, 2)
+        // (3, 0)
+
+        double ix = 1.0;
+        double iy = 0.0;
+        double jx = 2.0 / 3;
+        double jy = 1.0;
+        double cx = 1.0;
+        double cy = 1.0;
+
+        assertEquals(0 + cx, simplex.getVert(0, 0).getX());
+        assertEquals(0 + cy, simplex.getVert(0, 0).getY());
+
+        assertEquals(3 * jx + cx, simplex.getVert(0, 3).getX());
+        assertEquals(3 * jy + cy, simplex.getVert(0, 3).getY());
+
+        assertEquals(ix + jx + cx, simplex.getVert(1, 1).getX());
+        assertEquals(iy + jy + cy, simplex.getVert(1, 1).getY());
+
+        assertEquals(ix + 2 * jx + cx, simplex.getVert(1, 2).getX());
+        assertEquals(iy + 2 * jy + cy, simplex.getVert(1, 2).getY());
+
+        assertEquals(3 * ix + cx, simplex.getVert(3, 0).getX());
+        assertEquals(3 * iy + cy, simplex.getVert(3, 0).getY());
+
     }
 }
