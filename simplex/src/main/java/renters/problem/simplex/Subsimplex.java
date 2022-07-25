@@ -5,35 +5,35 @@ import java.util.List;
 
 public class Subsimplex extends Simplex {
 
-    private int x;
-    private int y;
+    private int i;
+    private int j;
 
     List<Subsimplex> adjacentSimplexes = new ArrayList<Subsimplex>();
 
-    //this one should be for testing only, really
-    public Subsimplex(int x, int y) {
+    // this one should be for testing only, really
+    public Subsimplex(int i, int j) {
         super(2);
 
-        this.x = x;
-        this.y = y;
+        this.i = i;
+        this.j = j;
 
-        if(y % 2 == 1){
-            verts[0] = new Vertex(x, (y + 1) / 2);
-            verts[1] = new Vertex(x + 1, (y + 1) / 2);
-            verts[2] = new Vertex(x + 1, (y - 1) / 2);
-        }else{
-            verts[0] = new Vertex(x, y / 2);
-            verts[1] = new Vertex(x, y / 2 + 1);
-            verts[2] = new Vertex(x + 1, y / 2);
+        if (j % 2 == 1) {
+            verts[0] = new Vertex(i, (j + 1) / 2);
+            verts[1] = new Vertex(i + 1, (j + 1) / 2);
+            verts[2] = new Vertex(i + 1, (j - 1) / 2);
+        } else {
+            verts[0] = new Vertex(i, j / 2);
+            verts[1] = new Vertex(i, j / 2 + 1);
+            verts[2] = new Vertex(i + 1, j / 2);
         }
 
         // TODO Auto-generated constructor stub
     }
 
-    public Subsimplex(int x, int y, Vertex vertex, Vertex vertex2, Vertex vertex3) {
+    public Subsimplex(int i, int j, Vertex vertex, Vertex vertex2, Vertex vertex3) {
         super(2);
-        this.x = x;
-        this.y = y;
+        this.i = i;
+        this.j = j;
         verts[0] = vertex;
         verts[1] = vertex2;
         verts[2] = vertex3;
@@ -46,6 +46,11 @@ public class Subsimplex extends Simplex {
         }
 
         Subsimplex other = (Subsimplex) o;
+
+        // check (i, j)
+        if (this.i != other.getI() || this.j != other.getJ()) {
+            return false;
+        }
 
         // check for verts
         List<Vertex> oVerts = other.getAllVerts();
@@ -65,12 +70,12 @@ public class Subsimplex extends Simplex {
         return adjacentSimplexes;
     }
 
-    public int getX(){
-        return x;
+    public int getI() {
+        return i;
     }
 
-    public int getY(){
-        return y;
+    public int getJ() {
+        return j;
     }
 
     public void addAdjacent(Subsimplex subsimplex) {

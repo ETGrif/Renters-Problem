@@ -32,29 +32,29 @@ public class Simplex {
 
     private void fillSubsimplexes() {
         // loop through possible indecies
-        int i = 0;
-        for (int a = 0; a <= size - 2; a++) {
-            for (int b = 0; b <= 2 * (size - 2 - a); b++) {
+        int ind = 0;
+        for (int i = 0; i <= size - 2; i++) {
+            for (int j = 0; j <= 2 * (size - 2 - i); j++) {
                 // get the vertex objects, and add them
                 Vertex v1;
                 Vertex v2;
                 Vertex v3;
 
                 // if b is even
-                if (b % 2 == 0) {
-                    v1 = getVert(a, b / 2);
-                    v2 = getVert(a, b / 2 + 1);
-                    v3 = getVert(a + 1, b / 2);
+                if (j % 2 == 0) {
+                    v1 = getVert(i, j / 2);
+                    v2 = getVert(i, j / 2 + 1);
+                    v3 = getVert(i + 1, j / 2);
                 } else {
                     // if b is odd
-                    v1 = getVert(a, (b + 1) / 2);
-                    v2 = getVert(a + 1, (b + 1) / 2);
-                    v3 = getVert(a + 1, (b - 1) / 2);
+                    v1 = getVert(i, (j + 1) / 2);
+                    v2 = getVert(i + 1, (j + 1) / 2);
+                    v3 = getVert(i + 1, (j - 1) / 2);
                 }
 
-                Subsimplex simplex = new Subsimplex(a, b, v1, v2, v3);
-                subsimplexes[i] = simplex;
-                i++;
+                Subsimplex simplex = new Subsimplex(i, j, v1, v2, v3);
+                subsimplexes[ind] = simplex;
+                ind++;
             }
         }
 
@@ -62,12 +62,12 @@ public class Simplex {
 
     private void fillVerts() {
         // loop through the possible indecies
-        int i = 0;
-        for (int a = 0; a < size; a++) {
-            for (int b = 0; b < size - a; b++) {
-                Vertex newVert = new Vertex(a, b);
-                verts[i] = newVert;
-                i++;
+        int ind = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size - i; j++) {
+                Vertex newVert = new Vertex(i, j);
+                verts[ind] = newVert;
+                ind++;
             }
         }
     }
@@ -76,8 +76,8 @@ public class Simplex {
         return Arrays.asList(verts);
     }
 
-    public Vertex getVert(int a, int b) {
-        int ind = getVertIndFromCoords2D(a, b);
+    public Vertex getVert(int i, int j) {
+        int ind = getVertIndFromCoords2D(i, j);
         if (ind == -1)
             return null;
         return verts[ind];
@@ -89,7 +89,7 @@ public class Simplex {
     private int getVertIndFromCoords2D(int x, int y) {
         if (x < 0 || x > size)
             return -1;
-        if (y < 0 || y > size - x -1)
+        if (y < 0 || y > size - x - 1)
             return -1;
 
         int ind = (int) (x * (size + .5) - (.5 * x * x) + y);
@@ -123,25 +123,24 @@ public class Simplex {
         return subsimplexes[ind];
     }
 
-    private void setAdjacencies(){
-        for(Subsimplex s : subsimplexes){
-            //determine if major or minor (odd or even)
-            int x = s.getX();
-            int y = s.getY();
-            boolean isMajor = s.getY() % 2 == 1;
+    private void setAdjacencies() {
+        for (Subsimplex s : subsimplexes) {
+            // determine if major or minor (odd or even)
+            int x = s.getI();
+            int y = s.getJ();
+            boolean isMajor = s.getJ() % 2 == 1;
 
             // all simplexes have the one above, and below
             s.addAdjacent(getSubsimplex(x, y + 1));
             s.addAdjacent(getSubsimplex(x, y - 1));
 
-            //these sides are dependant on if its major or minor
+            // these sides are dependant on if its major or minor
             if (isMajor) {
                 s.addAdjacent(getSubsimplex(x + 1, y - 1));
             } else {
                 s.addAdjacent(getSubsimplex(x - 1, y + 1));
 
             }
-            
 
         }
     }
