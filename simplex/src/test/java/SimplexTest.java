@@ -284,6 +284,6 @@ public class SimplexTest {
         assertEquals(iy + cy, simplex.getVert(1, 0).getY());
 
         assertEquals(3 * ix + cx, simplex.getVert(3, 0).getX());
-        assertEquals(3 * iy + cy, simplex.getVert(3, 0).getY());
+        assertEquals(3 * iy + cy, simplex.getVert(3, 0).getY()); 
     }
 }
