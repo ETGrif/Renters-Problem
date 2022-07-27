@@ -9,6 +9,7 @@ plugins {
 dependencies {
     implementation("org.apache.commons:commons-text")
     implementation(project(":simplex"))
+    // implementation(project(":JMat:jmat.core"))
 }
 
 application {

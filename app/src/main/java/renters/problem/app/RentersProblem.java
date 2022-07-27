@@ -8,12 +8,17 @@ public class RentersProblem {
     private int numAgents;
     private double accuracy;
 
+    public Agent[] agents;
+    public Resource[] resources;
+
+
     private Simplex simplex;
-    private double simplexLength = 100;
+    private double simplexLength;
 
     public RentersProblem(double total, int numAgents, double accuracy) {
         this.total = total;
         this.numAgents = numAgents;
+        this.simplexLength = total * 2 / Math.sqrt(3);
 
         // TODO create simplex
         int divisions = chooseDivisions();
@@ -47,5 +52,7 @@ public class RentersProblem {
     public Simplex getSimplex() {
         return this.simplex;
     }
+
+
 
 }

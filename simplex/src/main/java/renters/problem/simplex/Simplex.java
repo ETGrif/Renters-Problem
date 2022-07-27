@@ -112,6 +112,11 @@ public class Simplex {
                 ind++;
             }
         }
+
+        majorVerts = new Vertex[3];
+        majorVerts[0] = getVert(0, 0);
+        majorVerts[1] = getVert(size - 1, 0);
+        majorVerts[2] = getVert(0, size - 1);
     }
 
     public List<Vertex> getAllVerts() {
@@ -123,6 +128,10 @@ public class Simplex {
         if (ind == -1)
             return null;
         return verts[ind];
+    }
+
+    public Vertex[] getMajorVerts(){
+        return majorVerts;
     }
 
     // this uses the coords to calculate the index it should be in the array

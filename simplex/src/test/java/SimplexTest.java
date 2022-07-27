@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import renters.problem.simplex.Simplex;
 import renters.problem.simplex.Subsimplex;
-import renters.problem.simplex.Vector2D;
 import renters.problem.simplex.Vertex;
 
 public class SimplexTest {

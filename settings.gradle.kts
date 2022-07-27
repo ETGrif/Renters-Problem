@@ -9,3 +9,6 @@
 
 rootProject.name = "renters-problem"
 include("app", "list", "simplex")
+
+// include(":JMat:jmat.core")
+// project(":JMat:jmat.core").projectDir = file("JMat/jmat.core")
