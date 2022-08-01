@@ -27,6 +27,7 @@ public class RentersProblem {
 
     private Simplex simplex;
     private double simplexLength;
+    private int divisions;
 
     public RentersProblem(double total, int numAgents, double accuracy) {
         this.total = total;
@@ -34,7 +35,7 @@ public class RentersProblem {
         this.simplexLength = total * 2 / Math.sqrt(3);
 
         // TODO create simplex
-        int divisions = chooseDivisions();
+        divisions = chooseDivisions();
         simplex = new Simplex(divisions, getMajorPoints());
 
         // create resources
@@ -44,10 +45,79 @@ public class RentersProblem {
 
         // create users
         makeUsers();
-        // TODO make anchored sets
+        // make anchored sets
         anchorSets();
 
-        System.out.println("Completed the creation.");
+        makeInitChoicesSolid();
+    }
+
+    private void makeInitChoicesSolid(){
+        // each major vert needs to choose a seperate resource
+        // the major edges of the simplex need to be randomly assigned to the resources
+        // on that edge's major verts
+        for (int i = 0; i < simplex.getMajorVerts().length; i++) {
+            nodeMap.get(simplex.getMajorVerts()[i]).setChoice(resources[i]);
+        }
+
+        // for the edges
+        Resource resource;
+
+        // left (0,i) -> (0, n)
+        resource = nodeMap.get(simplex.getVert(0, divisions -1)).getChoice();
+        
+        for (int i = 1; i < divisions - 1; i++) { // dont include the major verts!
+            nodeMap.get(simplex.getVert(0, i)).setChoice(resource);
+        }
+
+        // right(i, n-i) -> (n, 0)
+        resource = nodeMap.get(simplex.getVert(divisions -1, 0)).getChoice();
+        for (int i = 1; i < divisions - 1; i++) {
+            nodeMap.get(simplex.getVert(i, divisions - i -1)).setChoice(resource);
+        }
+
+        // bottom (i,0) -> (0, 0) 
+        resource = nodeMap.get(simplex.getVert(0, 0)).getChoice();
+        for (int i = 1; i < divisions - 1; i++) {
+            nodeMap.get(simplex.getVert(i, 0)).setChoice(resource);
+        }
+    }
+
+    private void makeInitChoicesRandom() {
+        // each major vert needs to choose a seperate resource
+        // the major edges of the simplex need to be randomly assigned to the resources
+        // on that edge's major verts
+
+        // major verts
+        for (int i = 0; i < simplex.getMajorVerts().length; i++) {
+            nodeMap.get(simplex.getMajorVerts()[i]).setChoice(resources[i]);
+        }
+
+        // for the edges
+        Resource[] possResources = new Resource[numAgents - 1];
+
+        // left (0,i) -> (0, 0) (0, n)
+        possResources[0] = nodeMap.get(simplex.getVert(0, 0)).getChoice();
+        possResources[1] = nodeMap.get(simplex.getVert(0, divisions - 1)).getChoice();
+        for (int i = 1; i < divisions - 1; i++) { // dont include the major verts!
+            Resource randResource = possResources[(int) (Math.random() * possResources.length)];
+            nodeMap.get(simplex.getVert(0, i)).setChoice(randResource);
+        }
+
+        // right(i, n-i) -> (0, n) (n, 0)
+        possResources[0] = nodeMap.get(simplex.getVert(0, divisions - 1)).getChoice();
+        possResources[1] = nodeMap.get(simplex.getVert(divisions - 1, 0)).getChoice();
+        for (int i = 1; i < divisions - 1; i++) {
+            Resource randResource = possResources[(int) (Math.random() * possResources.length)];
+            nodeMap.get(simplex.getVert(i, divisions - i -1)).setChoice(randResource);
+        }
+
+        // bottom (i,0) -> (0, 0) (n, 0)
+        possResources[0] = nodeMap.get(simplex.getVert(0, 0)).getChoice();
+        possResources[1] = nodeMap.get(simplex.getVert(divisions - 1, 0)).getChoice();
+        for (int i = 1; i < divisions - 1; i++) {
+            Resource randResource = possResources[(int) (Math.random() * possResources.length)];
+            nodeMap.get(simplex.getVert(i, 0)).setChoice(randResource);
+        }
 
     }
 
@@ -88,11 +158,6 @@ public class RentersProblem {
     }
 
     private void anchorSimplex(Subsimplex s) {
-        // Node[] nodes = new Node[s.getMajorVerts().length];
-        // for (int i = 0; i < nodes.length; i++) {
-        //     nodes[i] = nodeMap.get(s.getMajorVerts()[i]);
-        // }
-
         // make copy of possible agents
         // remove all existing agents
         // if there is more than 1 possible agent remaining, break
@@ -100,15 +165,6 @@ public class RentersProblem {
         Node nullAgentNode = null;
         // Array.asList() return an immutable list, so we make a copy that is mutable
         List<Agent> possibleAgents = new ArrayList<Agent>(Arrays.asList(agents));
-        // for (Node n : nodes) {
-        //     Agent nodeAgent = n.getAnchoredAgent();
-        //     if (nodeAgent == null) {
-        //         nullAgentNode = n;
-        //     } else {
-        //         possibleAgents.remove(nodeAgent);
-                
-        //     }
-        // }
 
         Vertex[] verts = s.getMajorVerts();
         for (int i = 0; i < verts.length; i++) {
@@ -140,11 +196,11 @@ public class RentersProblem {
 
     }
 
-    public void anchorANode(int i, int j, Agent agent) {
+    private void anchorANode(int i, int j, Agent agent) {
         anchorANode(simplex.getVert(i, j), agent);
     }
 
-    public void anchorANode(Vertex v, Agent agent) {
+    private void anchorANode(Vertex v, Agent agent) {
         anchoredSets.get(agent).add(v);
         nodeMap.get(v).setAnchoredAgent(agent);
     }
@@ -179,7 +235,7 @@ public class RentersProblem {
         if (simplex.dimention != 2)
             throw new RuntimeException("There should only be 2d nodes rn");
 
-        resources = new Resource[simplex.size];
+        resources = new Resource[simplex.dimention + 1];
         resources[0] = new Resource("Room A");
         resources[1] = new Resource("Room B");
         resources[2] = new Resource("Room C");
@@ -216,6 +272,52 @@ public class RentersProblem {
 
     public Agent[] getAgents() {
         return this.agents;
+    }
+
+    public List<Subsimplex> getSolutions() {
+        ArrayList<Subsimplex> solutions = new ArrayList<>();
+        for(Subsimplex s: simplex.getAllSubsimplexes()){
+            if(isSolution(s)){
+                solutions.add(s);
+            }
+        }
+
+        //remove the edges if it still makes a nonzero solution
+        ArrayList<Subsimplex> noEdges = removeEdgeSimplexes(solutions);
+        if(noEdges.size() > 0){
+            return noEdges;
+        }
+
+        return solutions;
+    }
+
+    private ArrayList<Subsimplex> removeEdgeSimplexes(ArrayList<Subsimplex> solutions) {
+        ArrayList<Subsimplex> solutionsCopy = new ArrayList<>(solutions);
+        for(int ind = solutions.size() -1; ind >= 0; ind--){
+            Subsimplex s = solutions.get(ind);
+            int i = s.getI();
+            int j = s.getJ();
+            int topEdgeInd = 2*(divisions-2-i);
+            if(i==0 || j ==0  || j == 1 || j == topEdgeInd || j == topEdgeInd - 1){
+                solutionsCopy.remove(s);
+            }
+        }
+        return solutionsCopy;
+    }
+
+    public boolean isSolution(Subsimplex s){
+        Set<Resource> foundResources = new HashSet<Resource>();
+        //check if all nodes are different
+        for(Vertex v : s.getMajorVerts()){
+            Resource r = nodeMap.get(v).getChoice();
+            if(foundResources.contains(r)){
+                return false;
+            }
+            foundResources.add(r);
+        }
+
+        //if it made it this far there were no duplicates
+        return true;
     }
 
 }
