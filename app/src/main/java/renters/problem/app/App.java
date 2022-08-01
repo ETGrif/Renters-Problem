@@ -8,8 +8,7 @@ public class App {
         RentersProblem rp = new RentersProblem(8, 3, 5.00);
 
         Simplex s = rp.getSimplex();
-        Vertex v = s.getVert(1, 1);
-
-        Divider.getDivision(s, v);
+        
+        
     }
 }

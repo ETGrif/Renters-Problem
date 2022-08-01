@@ -27,6 +27,11 @@ public class Subsimplex extends Simplex {
             verts[2] = new Vertex(i + 1, j / 2);
         }
 
+        //also assign the major verts
+        for(int ind = 0; ind < verts.length; ind++){
+            majorVerts[ind] = verts[ind];
+        }
+
         // TODO Auto-generated constructor stub
     }
 
@@ -37,6 +42,12 @@ public class Subsimplex extends Simplex {
         verts[0] = vertex;
         verts[1] = vertex2;
         verts[2] = vertex3;
+
+        
+        //also assign the major verts
+        for(int ind = 0; ind < verts.length; ind++){
+            majorVerts[ind] = verts[ind];
+        }
     }
 
     @Override

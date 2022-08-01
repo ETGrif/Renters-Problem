@@ -1,5 +1,6 @@
 package renters.problem.app;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import renters.problem.simplex.Simplex;
@@ -8,22 +9,24 @@ import renters.problem.simplex.Vector2D;
 import renters.problem.simplex.Vertex;
 
 public class Divider {
-    
-    public static Map<Resource, Double> getDivision(Simplex simplex, Vertex v){
+
+    public static Map<Resource, Double> getDivision(RentersProblem rp, Simplex simplex, Vertex v) {
         Double[] lengths = vivianis(simplex, v);
-        
-        System.out.println(lengths.toString());
-        return cleanUp(null);
+
+        Map<Resource, Double> map = new HashMap<Resource, Double>();
+        for (int i = 0; i < lengths.length; i++) {
+            map.put(rp.resources[i], lengths[i]);
+        }
+
+        return cleanUp(map);
     }
 
-    
-
-    private static Map<Resource, Double> cleanUp(Map<Resource, Double> division){
-        //TODO decide if this should exist, and what it should do
+    private static Map<Resource, Double> cleanUp(Map<Resource, Double> division) {
+        // TODO decide if this should exist, and what it should do
         return division;
     }
 
-    private static Double[] vivianis(Simplex simplex, Vertex vertex){
+    private static Double[] vivianis(Simplex simplex, Vertex vertex) {
         Vertex[] mv = simplex.getMajorVerts();
 
         Vector2D c = new Vector2D(mv[0].getPos());
@@ -42,12 +45,10 @@ public class Divider {
         double l2 = r.getLength();
         // double l3 = t.getLength();
 
-        double alt = u.getLength() * Math.sqrt(3)/2;
+        double alt = u.getLength() * Math.sqrt(3) / 2;
         double l3 = alt - l1 - l2;
 
-        return new Double[]{l1, l2, l3};
-
-
+        return new Double[] { l1, l2, l3 };
 
     }
 
