@@ -32,18 +32,19 @@ public void simplexCreationTest2D(){
 @Test
 public void anchoredSetsTest(){
     Agent unused = rp.unused;
-    Map<Agent, Set<Vertex>> anchoredSets = rp.getAnchoredSets();
+    Map<Agent, Set<Node>> anchoredSets = rp.getAnchoredSets();
+    Map<Vertex, Node> nodeMap = rp.nodeMap;
     Simplex simplex = rp.getSimplex();
     
     //im just gonna check some key points in the unused set, and then the size for all
     // contains (0,0) , (3,0) , (0,7) , (4,3)
     // does not contain (1,1)
     assertEquals(21, anchoredSets.get(unused).size());
-    assertTrue(anchoredSets.get(unused).contains(simplex.getVert(0,0)));//left corner
-    assertTrue(anchoredSets.get(unused).contains(simplex.getVert(3,0)));//botom edge
-    assertTrue(anchoredSets.get(unused).contains(simplex.getVert(0,7)));//Top corner
-    assertTrue(anchoredSets.get(unused).contains(simplex.getVert(4,3)));//right edge
-    assertFalse(anchoredSets.get(unused).contains(simplex.getVert(1,1)));//center
+    assertTrue(anchoredSets.get(unused).contains(nodeMap.get(simplex.getVert(0,0))));//left corner
+    assertTrue(anchoredSets.get(unused).contains(nodeMap.get(simplex.getVert(3,0))));//botom edge
+    assertTrue(anchoredSets.get(unused).contains(nodeMap.get(simplex.getVert(0,7))));//Top corner
+    assertTrue(anchoredSets.get(unused).contains(nodeMap.get(simplex.getVert(4,3))));//right edge
+    assertFalse(anchoredSets.get(unused).contains(nodeMap.get(simplex.getVert(1,1))));//center
 
     //other agents
     Agent[] agents = rp.getAgents();

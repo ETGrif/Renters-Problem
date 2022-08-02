@@ -1,5 +1,6 @@
 package renters.problem.app;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import renters.problem.app.exceptions.NotAllQuestionsAskedException;
 import renters.problem.simplex.Simplex;
 import renters.problem.simplex.Subsimplex;
 import renters.problem.simplex.Vertex;
@@ -23,7 +25,7 @@ public class RentersProblem {
     public Resource[] resources;
 
     public Map<Vertex, Node> nodeMap;
-    public Map<Agent, Set<Vertex>> anchoredSets;
+    public Map<Agent, Set<Node>> anchoredSets;
 
     private Simplex simplex;
     private double simplexLength;
@@ -125,12 +127,12 @@ public class RentersProblem {
         // TODO make check to see if the simplex is large enough to make an anchored
         // set?
 
-        anchoredSets = new HashMap<Agent, Set<Vertex>>();
+        anchoredSets = new HashMap<Agent, Set<Node>>();
         // instantiate the anchor sets
         unused = new Agent("Unused");
-        anchoredSets.put(unused, new HashSet<Vertex>());
+        anchoredSets.put(unused, new HashSet<Node>());
         for (Agent a : agents) {
-            anchoredSets.put(a, new HashSet<Vertex>());
+            anchoredSets.put(a, new HashSet<Node>());
         }
 
         int maxInd = simplex.size - 1;
@@ -201,7 +203,8 @@ public class RentersProblem {
     }
 
     private void anchorANode(Vertex v, Agent agent) {
-        anchoredSets.get(agent).add(v);
+        Node n = nodeMap.get(v);
+        anchoredSets.get(agent).add(n);
         nodeMap.get(v).setAnchoredAgent(agent);
     }
 
@@ -210,7 +213,7 @@ public class RentersProblem {
         String[] names = { "Alice", "Barb", "Chris" };
         agents = new Agent[numAgents];
         for (int i = 0; i < numAgents; i++) {
-            agents[i] = new Agent(names[i]);
+            agents[i] = new Agent(names[i], getDefaultColor());
         }
     }
 
@@ -222,7 +225,7 @@ public class RentersProblem {
 
         for (Vertex v : simplex.getAllVerts()) {
             Node n = new Node();
-            n.setDivision(Divider.getDivision(this, simplex, v));
+            n.setDivision(Divider.getDivision(this, v));
             nodeMap.put(v, n);
         }
     }
@@ -236,9 +239,9 @@ public class RentersProblem {
             throw new RuntimeException("There should only be 2d nodes rn");
 
         resources = new Resource[simplex.dimention + 1];
-        resources[0] = new Resource("Room A");
-        resources[1] = new Resource("Room B");
-        resources[2] = new Resource("Room C");
+        resources[0] = new Resource("Room A", getDefaultColor());
+        resources[1] = new Resource("Room B", getDefaultColor());
+        resources[2] = new Resource("Room C", getDefaultColor());
 
     }
 
@@ -266,7 +269,7 @@ public class RentersProblem {
         return this.simplex;
     }
 
-    public Map<Agent, Set<Vertex>> getAnchoredSets() {
+    public Map<Agent, Set<Node>> getAnchoredSets() {
         return this.anchoredSets;
     }
 
@@ -308,9 +311,11 @@ public class RentersProblem {
     public boolean isSolution(Subsimplex s){
         Set<Resource> foundResources = new HashSet<Resource>();
         //check if all nodes are different
-        for(Vertex v : s.getMajorVerts()){
+        for(Vertex v : s.getMajorVerts()) {
             Resource r = nodeMap.get(v).getChoice();
-            if(foundResources.contains(r)){
+            if (r == null)
+                throw new NotAllQuestionsAskedException();
+            if (foundResources.contains(r)) {
                 return false;
             }
             foundResources.add(r);
@@ -318,6 +323,24 @@ public class RentersProblem {
 
         //if it made it this far there were no duplicates
         return true;
+    }
+
+    public double getTotal(){
+        return total;
+    }
+
+
+    private static int defaultColorIndex = 0;
+    public Color getDefaultColor(){
+        Color[] colors = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK};
+        Color chosenColor = colors[defaultColorIndex];
+        defaultColorIndex++;
+        defaultColorIndex %= colors.length; //just loop if it gets all of them
+        return chosenColor;
+    }
+
+    public double getAccuracy() {
+        return accuracy;
     }
 
 }

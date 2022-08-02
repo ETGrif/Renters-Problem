@@ -195,4 +195,19 @@ public class Simplex {
 
         }
     }
+
+    public Vertex getCenterOfSimplex() {
+        
+        Vector2D center = new Vector2D(0,0);
+
+        //get average point (center)
+        for(Vertex v : majorVerts){
+            center.add(v.getPos());
+        }
+        center.divide(majorVerts.length);
+
+        Vertex centerV = new Vertex(-1, -1, center);
+
+        return centerV;
+    }
 }

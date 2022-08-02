@@ -10,8 +10,8 @@ import renters.problem.simplex.Vertex;
 
 public class Divider {
 
-    public static Map<Resource, Double> getDivision(RentersProblem rp, Simplex simplex, Vertex v) {
-        Double[] lengths = vivianis(simplex, v);
+    public static Map<Resource, Double> getDivision(RentersProblem rp, Vertex v) {
+        Double[] lengths = vivianis(rp.getSimplex(), v);
 
         Map<Resource, Double> map = new HashMap<Resource, Double>();
         for (int i = 0; i < lengths.length; i++) {

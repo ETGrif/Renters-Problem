@@ -1,42 +1,88 @@
 package renters.problem.app;
 
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.swing.JFrame;
+
+import renters.problem.gui.AgentsAndResourcesPanel;
+import renters.problem.gui.QuestionPanel;
+import renters.problem.gui.SetUpPanel;
+import renters.problem.gui.ShowAnswerPane;
 import renters.problem.simplex.Simplex;
 import renters.problem.simplex.Subsimplex;
 import renters.problem.simplex.Vertex;
 
-public class App {
+public class App extends JFrame {
 
-    private static RentersProblem rp;
+    public static RentersProblem rp;
+
+    private App frame;
 
     public static void main(String[] args) {
-        // make the structure
-        rp = new RentersProblem(8, 3, 5.00);
+        App frame = new App();
+        frame.pack();
+        frame.setVisible(true);
+
+
 
         // ask for questions
-        for (Agent a : rp.agents) {
-            askQuestionsToAgent(a);
-        }
+        // for (Agent a : rp.agents) {
+        //     askQuestionsToAgent(a);
+        // }
+
+        // // for the sake of knowing what the graph looks like
+        // printAgentsToSys();
+        // printChoicesToSys();
+
+        // // probe for solution
+        // List<Subsimplex> solutions = rp.getSolutions();
+        // System.out.println(solutions.size());
+        // System.out.println();
+    }
+
+    public App() {
+        this.frame = this; //reference for later
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Renter's Problem");
+        setPreferredSize(new Dimension(600, 200));
+        frame.add(new SetUpPanel(frame));
+    }
+
+    public void createRentersProblem(double total, int numAgents){
+        // make the structure
+        rp = new RentersProblem(total, numAgents, 5.00);
         
-        //for the sake of knowing what the graph looks like
-        printAgentsToSys();
-        printChoicesToSys();
 
-        // probe for solution
-        List<Subsimplex> solutions = rp.getSolutions();
-        System.out.println(solutions.size());
-        System.out.println();
+        //remove the SetUpPanel
+        frame.getContentPane().removeAll();
+        
+        
+        //add the Agent and Resource pane
+        add(new AgentsAndResourcesPanel(frame));
+        frame.revalidate();
+        frame.repaint();
+    }
 
+    //this happens after the agents and resorces are made
+    public void startQuestionsPane() {
+
+        frame.getContentPane().removeAll();
+
+        frame.add(new QuestionPanel(frame));
+
+        frame.revalidate();
+        frame.repaint();
+        
     }
 
     public static void askQuestionsToAgent(Agent a) {
 
-        for (Vertex v : rp.anchoredSets.get(a)) {
-            askQuestionOnNode(rp.nodeMap.get(v));
+        for (Node n : rp.anchoredSets.get(a)) {
+            askQuestionOnNode(n);
         }
     }
 
@@ -95,4 +141,44 @@ public class App {
         }
 
     }
+
+    public RentersProblem getRentersProblem(){
+        return rp;
+    }
+
+	public void afterQuestions() {
+        frame.getContentPane().removeAll();
+
+        //check for solutions
+        List<Subsimplex> solutions = rp.getSolutions();
+        
+        //choose a random one I guess?
+        int rand = (int) (Math.random()*solutions.size());
+        Subsimplex solutionSimplex = solutions.get(rand);
+
+        //check for the accuracy
+        Vertex center = solutionSimplex.getCenterOfSimplex();
+        Map<Resource, Double> solution = Divider.getDivision(rp, center);
+
+        double dist = 0;
+        for(Vertex c : solutionSimplex.getMajorVerts()){
+            Map<Resource, Double> subDivision = rp.nodeMap.get(c).getDivision();
+            for(Resource r : subDivision.keySet()){
+                dist += Math.abs(solution.get(r) - subDivision.get(r));
+            }
+        }
+        dist /= Math.pow(solutionSimplex.getMajorVerts().length,2);
+
+        //itterate
+        if(dist > rp.getAccuracy()){
+            System.out.println("There is a need for itteration. TODO");
+        }
+
+        //OR show the solution
+        frame.add(new ShowAnswerPane(frame, solution, solutionSimplex));
+
+        frame.revalidate();
+        frame.repaint();
+
+	}
 }
